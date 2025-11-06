@@ -1,0 +1,42 @@
+package apresentacao;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import negocio.Pessoa;
+
+public class ControladorGravar implements ActionListener {
+	//Propriedades da classe
+	private JTextField txtNome = null;
+	private JTextField txtEmail = null;
+	private JTextField txtTelefone = null;
+	
+	
+	public ControladorGravar(JTextField txtNome, JTextField txtEmail, JTextField txtTelefone) {
+		super();
+		this.txtNome = txtNome;
+		this.txtEmail = txtEmail;
+		this.txtTelefone = txtTelefone;
+	}
+
+	// Método implementado da interface
+	public void actionPerformed(ActionEvent e) {
+		try {
+			Pessoa objPessoa = new Pessoa();
+			
+			objPessoa.setNome(txtNome.getText());
+			objPessoa.setEmail(txtEmail.getText());
+			objPessoa.setTelefone(txtTelefone.getText());
+			
+			objPessoa.persistir();
+			JOptionPane.showMessageDialog(null, "Gravação com Sucesso !");
+		} catch (Exception erro) {
+			JOptionPane.showMessageDialog(null, erro);
+		}
+		
+	}
+
+}
