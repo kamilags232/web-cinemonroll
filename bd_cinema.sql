@@ -4,7 +4,9 @@ use bd_cinema;
 
 create table tb_cliente
 (cd_cliente int not null primary key,
+cpf char(14),
 cliente char(50),
+telefone char(12),
 email char (50));
 
 create table tb_sala
@@ -52,6 +54,9 @@ cd_lanche int not null,
 quantidade int,
 valor_parcial decimal(3,2));
 
+ALTER TABLE tb_cliente 
+MODIFY cd_cliente INT NOT NULL AUTO_INCREMENT;
+
 alter table tb_sessao
 add constraint fk_filme foreign key (cd_filme)
 references tb_filme (cd_filme);
@@ -79,3 +84,4 @@ references tb_venda (nr_recibo);
 alter table rl_venda_lanche
 add constraint fk_lanche foreign key (cd_lanche)
 references tb_lanche (cd_lanche);
+

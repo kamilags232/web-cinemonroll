@@ -5,15 +5,15 @@ import persistencia.PessoaDAO;
 public class Pessoa {
 
     private int cdCliente;
-    private String nome;
+    private String cliente;
     private String telefone;
     private String email;
 
     public Pessoa() {}
 
-    public Pessoa(int cdCliente, String nome, String telefone, String email) {
+    public Pessoa(int cdCliente, String cliente, String telefone, String email) {
         this.cdCliente = cdCliente;
-        this.nome = nome;
+        this.cliente = cliente;
         this.telefone = telefone;
         this.email = email;
     }
@@ -26,12 +26,12 @@ public class Pessoa {
         this.cdCliente = cdCliente;
     }
 
-    public String getNome() {
-        return nome;
+    public String getCliente() {
+        return cliente;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
     }
 
     public String getTelefone() {

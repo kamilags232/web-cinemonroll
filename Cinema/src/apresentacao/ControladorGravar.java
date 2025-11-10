@@ -27,7 +27,7 @@ public class ControladorGravar implements ActionListener {
 		try {
 			Pessoa objPessoa = new Pessoa();
 			
-			objPessoa.setNome(txtNome.getText());
+			objPessoa.setCliente(txtNome.getText());
 			objPessoa.setEmail(txtEmail.getText());
 			objPessoa.setTelefone(txtTelefone.getText());
 			
