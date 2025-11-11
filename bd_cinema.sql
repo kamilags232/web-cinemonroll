@@ -18,7 +18,7 @@ create table tb_filme
 (cd_filme int not null primary key,
 filme char(50),
 duração time,
-classe_etária char(2),
+classe_etária char(5),
 tp_filme char(10));
 
 create table tb_sessao
@@ -32,7 +32,8 @@ create table tb_venda
 (nr_recibo int not null primary key,
 dt_hr_venda datetime,
 valor_total decimal(6,2),
-cd_cliente int not null);
+cd_cliente int not null,
+tp_pagamento varchar(20));
 
 create table tb_ingresso
 (cd_ingresso int not null primary key,
@@ -44,7 +45,7 @@ nr_recibo int not null);
 
 create table tb_lanche
 (cd_lanche int not null primary key,
-lanche char(10),
+lanche char(50),
 valor_lanche decimal(5,2));
 
 create table rl_venda_lanche
@@ -103,10 +104,14 @@ add constraint fk_lanche foreign key (cd_lanche)
 references tb_lanche (cd_lanche);
 
 INSERT INTO tb_filme (cd_filme, filme, duração, classe_etária, tp_filme)
-VALUES (1, 'Vingadores: A Última Batalha', '03:02:00', '12', 'Ação'),
-       (2, 'Interestelar', '02:49:00', '10', 'Ficção'),
+VALUES (1, 'Vingadores: Ultimato', '03:02:00', '12', 'Ação'),
+       (2, 'The Batman', '02:56:00', '14', 'Ação'),
        (3, 'Oppenheimer', '03:00:00', '16', 'Suspense'),
-       (4, 'Duna 2', '02:46:00', '14', 'Ficção');
+       (4, 'Avatar: O Caminho da Água', '03:12:00', '14', 'Ficção'),
+       (5, 'Coringa', '02:02:00', '16','Drama'),
+       (6, 'Homem-Aranha: Sem Volta Para casa', '02:28:00', '12', 'Ação'),
+       (7, 'Frozen 2', '01:44:00', 'Livre', 'Animação'),
+       (8, 'Barbie', '01:54:00', '12', 'Comédia');
 
 INSERT INTO tb_sala (sala, capacidade, tp_sala)
 VALUES
@@ -117,24 +122,55 @@ VALUES
 (5, 90,  '2D'),
 (6, 140, 'IMAX'),
 (7, 80,  '2D'),
-(8, 70,  'VIP');
+(8, 70,  '3D');
 
 INSERT INTO tb_sessao (sessao, data_hora, cd_filme, cd_sala)
-VALUES ('Sessão 14h', '2025-01-20 14:00:00', 1, 1),
-       ('Sessão 16h30', '2025-01-20 16:30:00', 1, 1),
-       ('Sessão 19h', '2025-01-20 19:00:00', 1, 2),
-       ('Sessão 21h30', '2025-01-20 21:30:00', 1, 2),
-       ('Sessão 14h', '2025-01-20 14:00:00', 2, 3),
-       ('Sessão 16h30', '2025-01-20 16:30:00', 2, 3),
-       ('Sessão 19h', '2025-01-20 19:00:00', 2, 4),
-       ('Sessão 21h30', '2025-01-20 21:30:00', 2, 4),
-       ('Sessão 14h', '2025-01-20 14:00:00', 3, 5),
-       ('Sessão 16h30', '2025-01-20 16:30:00', 3, 5),
-       ('Sessão 19h', '2025-01-20 19:00:00', 3, 6),
-       ('Sessão 21h30', '2025-01-20 21:30:00', 3, 6),
-       ('Sessão 14h', '2025-01-20 14:00:00', 4, 7),
-       ('Sessão 16h30', '2025-01-20 16:30:00', 4, 7),
-       ('Sessão 19h', '2025-01-20 19:00:00', 4, 8),
-       ('Sessão 21h30', '2025-01-20 21:30:00', 4, 8);
+VALUES ('Sessão 14h', '2025-01-20 14:00:00', 1, 3),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 1, 4),
+       ('Sessão 19h', '2025-01-20 19:00:00', 1, 6),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 1, 1),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 2, 2),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 2, 8),
+       ('Sessão 19h', '2025-01-20 19:00:00', 2, 2),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 2, 8),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 3, 1),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 3, 2),
+       ('Sessão 19h', '2025-01-20 19:00:00', 3, 5),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 3, 7),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 4, 4),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 4, 6),
+       ('Sessão 19h', '2025-01-20 19:00:00', 4, 6),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 4, 4),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 5, 3),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 5, 7),
+       ('Sessão 19h', '2025-01-20 19:00:00', 5, 3),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 5, 4),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 6, 7),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 6, 7),
+       ('Sessão 19h', '2025-01-20 19:00:00', 6, 5),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 6, 8),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 7, 7),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 7, 5),
+       ('Sessão 19h', '2025-01-20 19:00:00', 7, 5),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 7, 1),
+       
+       ('Sessão 14h', '2025-01-20 14:00:00', 8, 1),
+       ('Sessão 16h30', '2025-01-20 16:30:00', 8, 3),
+       ('Sessão 19h', '2025-01-20 19:00:00', 8, 2),
+       ('Sessão 21h30', '2025-01-20 21:30:00', 8, 8);
+       
+INSERT INTO tb_lanche (lanche, valor_lanche)
+VALUES
+('Combo pipoca + refri', 35.00),
+('Pipoca média', 20.00),
+('Refrigerante', 12.00),
+('Doce', 10.00);
 
 SELECT * FROM tb_cliente;
+
