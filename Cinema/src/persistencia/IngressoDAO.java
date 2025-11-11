@@ -2,6 +2,8 @@ package persistencia;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import negocio.Ingresso;
 
 public class IngressoDAO {
@@ -24,4 +26,20 @@ public class IngressoDAO {
             ps.executeUpdate();
         }
     }
+    
+    public static boolean assentoOcupado(String assento, int cdSessao) throws Exception {
+        String sql = "SELECT 1 FROM tb_ingresso WHERE assento = ? AND cd_sessao = ?";
+        BancoDeDados db = new BancoDeDados();
+
+        try (Connection conn = db.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, assento);
+            ps.setInt(2, cdSessao);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); // se encontrar, é true = ocupado
+        }
+    }
+
 }

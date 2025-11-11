@@ -17,6 +17,7 @@ import negocio.Ingresso;
 import negocio.Pessoa;
 import negocio.Venda;
 import persistencia.FilmeDAO;
+import persistencia.IngressoDAO;
 import persistencia.PessoaDAO;
 
 public class VisaoPessoa extends JFrame {
@@ -119,10 +120,10 @@ public class VisaoPessoa extends JFrame {
                         JOptionPane.showMessageDialog(null, "Preencha o email.");
                         return;
                     }
-                    if (cpf.isEmpty() || cpf.contains("_")) {
-                        JOptionPane.showMessageDialog(null, "CPF incompleto.");
-                        return;
+                    if (cpf.contains("_")) {
+                        cpf = null;
                     }
+
                     if (assento.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Preencha o assento (ex: A5).");
                         return;
@@ -138,6 +139,17 @@ public class VisaoPessoa extends JFrame {
                     // 2) descobrir cd_filme e cd_sessao automaticamente
                     int cdFilme = FilmeDAO.getCodigoDoFilme(filmeEscolhido);
                     int cdSessao = FilmeDAO.getSessaoPorFilme(cdFilme);
+                    
+                 // impedir assento repetido
+                    if (IngressoDAO.assentoOcupado(assento, cdSessao)) {
+                        JOptionPane.showMessageDialog(null, "Este assento já foi vendido!");
+                        return;
+                    }
+                    
+                    if (!assento.matches("[A-Z]\\d{1,2}")) {
+                        JOptionPane.showMessageDialog(null, "Assento inválido! Ex: A5");
+                        return;
+                    }
 
                     // 3) gravar venda e obter recibo
                     Venda v = new Venda(cdCliente, new BigDecimal("20.00"));
@@ -147,7 +159,7 @@ public class VisaoPessoa extends JFrame {
                     Ingresso i = new Ingresso(assento, cdSessao, recibo);
                     i.persistir();
 
-                    JOptionPane.showMessageDialog(null, "Ingresso vendido com sucesso!\nRecibo: " + recibo);
+                    JOptionPane.showMessageDialog(null, "Ingresso vendido com sucesso!");
 
                     // limpar campos
                     txtNome.setText("");

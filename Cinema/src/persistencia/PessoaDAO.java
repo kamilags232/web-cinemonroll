@@ -18,7 +18,12 @@ public class PessoaDAO {
 
 	        ps.setString(1, objPessoa.getCliente());
 	        ps.setString(2, objPessoa.getEmail());
-	        ps.setString(3, objPessoa.getCpf());
+	        if (objPessoa.getCpf() == null || objPessoa.getCpf().trim().equals("__.___.___-__")) {
+	            ps.setNull(3, java.sql.Types.CHAR);
+	        } else {
+	            ps.setString(3, objPessoa.getCpf());
+	        }
+
 	        ps.executeUpdate();
 
 	        ResultSet rs = ps.getGeneratedKeys();
