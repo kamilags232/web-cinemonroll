@@ -10,13 +10,14 @@ public class Venda {
     private int cdCliente;
     private LocalDateTime dtHrVenda;
     private BigDecimal valorTotal;
+    private String tpPagamento;
 
     public Venda() {}
 
-    public Venda(int cdCliente, BigDecimal valorTotal) {
+    public Venda(int cdCliente, BigDecimal total, String tpPagamento){
         this.cdCliente = cdCliente;
-        this.valorTotal = valorTotal;
-        this.dtHrVenda = LocalDateTime.now();
+        this.valorTotal = total;
+        this.tpPagamento = tpPagamento;
     }
 
     public int getNrRecibo() {
@@ -39,7 +40,15 @@ public class Venda {
         return valorTotal;
     }
 
-    public int persistir() throws Exception {
+    public String getTpPagamento() {
+		return tpPagamento;
+	}
+
+	public void setTpPagamento(String tpPagamento) {
+		this.tpPagamento = tpPagamento;
+	}
+
+	public int persistir() throws Exception {
         return new VendaDAO().persistir(this);
     }
 }

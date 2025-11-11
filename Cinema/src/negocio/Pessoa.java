@@ -48,8 +48,13 @@ public class Pessoa {
     }
 
     public void setCpf(String cpf) {
+    	if(cpf == null || cpf.trim().isEmpty() || cpf.contains("_")){
+            this.cpf = null;
+        } else {
         this.cpf = cpf;
     }
+    
+     }
 
     public void persistir() throws Exception {
         new PessoaDAO().persistir(this);

@@ -9,8 +9,8 @@ import negocio.Venda;
 public class VendaDAO {
 
     public int persistir(Venda obj) throws Exception {
-        String sql = "INSERT INTO tb_venda (dt_hr_venda, valor_total, cd_cliente) "
-                   + "VALUES (NOW(), ?, ?)";
+        String sql = "INSERT INTO tb_venda (dt_hr_venda, valor_total, cd_cliente, tp_pagamento) "
+                   + "VALUES (NOW(), ?, ?, ?)";
 
         BancoDeDados db = new BancoDeDados();
         int reciboGerado = 0;
@@ -20,6 +20,7 @@ public class VendaDAO {
 
             ps.setBigDecimal(1, obj.getValorTotal());
             ps.setInt(2, obj.getCdCliente());
+            ps.setString(3, obj.getTpPagamento());
 
             ps.executeUpdate();
 
