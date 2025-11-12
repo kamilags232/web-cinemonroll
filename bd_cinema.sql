@@ -165,12 +165,20 @@ VALUES ('Sessão 14h', '2025-01-20 14:00:00', 1, 3),
        ('Sessão 19h', '2025-01-20 19:00:00', 8, 2),
        ('Sessão 21h30', '2025-01-20 21:30:00', 8, 8);
        
-INSERT INTO tb_lanche (lanche, valor_lanche)
+INSERT INTO tb_lanche (cd_lanche, lanche, valor_lanche)
 VALUES
-('Combo pipoca + refri', 35.00),
-('Pipoca média', 20.00),
-('Refrigerante', 12.00),
-('Doce', 10.00);
+(1,'Combo Pipoca Média + Refri 500ml',25.00)
+(2,'Pipoca Pequena', 15.00),
+(3,'Pipoca média', 20.00),
+(4,'Pipoca Grande', 25.00),
+(5,'Refrigerante 300ml', 5.00);
+(6,'refrigerante 500ml', 10.00);
+(7,'Refrigerante 700ml', 15.00);
+(8,'Barra de choclate 90g', 7.00);
+(9,'M&M 80g', 8.00);
+(10,'Fini 80g (Tubes, Beijo, Dentadura)', 7.50);
 
 SELECT * FROM tb_cliente;
+
+update tb_lanche set valor_lanche set valor_lanche = 25.00 where cd_lanche = 1
 
