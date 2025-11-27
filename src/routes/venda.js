@@ -44,36 +44,31 @@ router.delete('/:nr_recibo', async (req, res) => {
     res.json({ message: "Venda deletada" })
 })
 
-
-// ⭐ NOVO: Recalcular total da venda (ingressos + lanches)
+// ⭐ Recalcular total da venda
 router.put('/recalcular/:nr_recibo', async (req, res) => {
     const nr = Number(req.params.nr_recibo)
 
     try {
-        // Buscar ingressos da venda
         const ingressos = await prisma.tb_ingresso.findMany({
             where: { nr_recibo: nr }
         })
 
-        // Buscar lanches da venda
         const lanches = await prisma.rl_venda_lanche.findMany({
             where: { nr_recibo: nr }
         })
 
-        // Somar ingressos
-        const totalIngressos = ingressos.reduce((soma, item) =>
-            soma + Number(item.valor_ingresso), 0
+        const totalIngressos = ingressos.reduce(
+            (soma, item) => soma + Number(item.valor_ingresso),
+            0
         )
 
-        // Somar lanches
-        const totalLanches = lanches.reduce((soma, item) =>
-            soma + Number(item.valor_parcial), 0
+        const totalLanches = lanches.reduce(
+            (soma, item) => soma + Number(item.valor_parcial),
+            0
         )
 
-        // Total final
         const valorTotal = totalIngressos + totalLanches
 
-        // Atualizar venda
         const vendaAtualizada = await prisma.tb_venda.update({
             where: { nr_recibo: nr },
             data: { valor_total: valorTotal }
@@ -91,17 +86,5 @@ router.put('/recalcular/:nr_recibo', async (req, res) => {
         res.status(400).json({ error: err.message })
     }
 })
-
-// Criar venda
-router.post('/', ...)
-
-// Listar vendas
-router.get('/', ...)
-
-// Editar venda
-router.put('/:nr_recibo', ...)
-
-// Deletar venda
-router.delete('/:nr_recibo', ...)
 
 export default router
