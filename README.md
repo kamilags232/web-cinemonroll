@@ -1,6 +1,6 @@
 # 🎬 Cinemoroll — Sistema de Compra e Gestão de Ingressos de Cinema
 
-Sistema web full-stack para compra e gestão de ingressos de cinema, com catálogo de filmes, sessões, seleção de assentos e integração entre front-end, back-end e banco de dados.
+Sistema web full-stack para compra e gestão de ingressos de cinema, com catálogo de filmes, sessões, seleção de assentos e integração entre front-end, back-end e banco de dados. Projeto acadêmico focado em arquitetura em camadas e desenvolvimento web completo.
 
 ---
 
