@@ -136,12 +136,6 @@ alter table tb_ingresso
 add constraint fk_ingresso_assento foreign key (cd_assento)
 references tb_assento (cd_assento);
 
-ALTER TABLE tb_produto ADD cd_filme INT;
-
-ALTER TABLE tb_produto
-ADD CONSTRAINT fk_produto_filme FOREIGN KEY (cd_filme)
-REFERENCES tb_filme(cd_filme);
-
 alter table tb_venda
 add constraint fk_cliente foreign key (cd_cliente)
 references tb_cliente (cd_cliente);
@@ -161,6 +155,58 @@ ALTER TABLE tb_venda
 ADD CONSTRAINT fk_usuario_venda
 FOREIGN KEY (cd_usuario)
 REFERENCES tb_usuario(cd_usuario);
+
+ALTER TABLE tb_ingresso 
+MODIFY cd_sessao INT NOT NULL;
+
+ALTER TABLE tb_produto
+ADD COLUMN tipo_produto VARCHAR(20) NOT NULL DEFAULT 'EXTRA';
+
+ALTER TABLE tb_ingresso
+ADD CONSTRAINT unique_assento_sessao
+UNIQUE (cd_sessao, cd_assento);
+
+DELIMITER $$
+
+CREATE TRIGGER trg_valida_produto_extra
+BEFORE INSERT ON rl_venda_produto
+FOR EACH ROW
+BEGIN
+    DECLARE tipo VARCHAR(20);
+
+    SELECT tipo_produto
+    INTO tipo
+    FROM tb_produto
+    WHERE cd_produto = NEW.cd_produto;
+
+    IF tipo <> 'EXTRA' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Apenas produtos extras podem ser inseridos em rl_venda_produto';
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_valida_produto_extra_update
+BEFORE UPDATE ON rl_venda_produto
+FOR EACH ROW
+BEGIN
+    DECLARE tipo VARCHAR(20);
+
+    SELECT tipo_produto
+    INTO tipo
+    FROM tb_produto
+    WHERE cd_produto = NEW.cd_produto;
+
+    IF tipo <> 'EXTRA' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Apenas produtos extras podem ser utilizados';
+    END IF;
+END$$
+
+DELIMITER ;
 
 DELIMITER $$
 
@@ -209,24 +255,7 @@ END$$
 
 DELIMITER ;
 
-INSERT INTO tb_produto (nome, descricao, preco, estoque, cd_filme)
-SELECT 
-    filme AS nome,
-    CONCAT('Filme - ', tp_filme),
-    0.00,
-	9999,
-    cd_filme
-FROM tb_filme;
 
-INSERT INTO rl_venda_produto (nr_recibo, cd_produto, quantidade, valor_parcial)
-SELECT 
-    i.nr_recibo,
-    p.cd_produto,
-    1,
-    i.valor_ingresso
-FROM tb_ingresso i
-JOIN tb_sessao s ON i.cd_sessao = s.cd_sessao
-JOIN tb_produto p ON p.cd_filme = s.cd_filme;
 
 -- Fazer atualização do insert
 
