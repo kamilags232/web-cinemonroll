@@ -4,9 +4,37 @@ use bd_cinema;
 
 create table tb_cliente
 (cd_cliente int not null primary key,
-cliente char(50),
-email char (50),
-cpf char(14));
+nome varchar(100) not null,
+email char (50) not null,
+cpf char(11) not null unique,
+telefone char(20),
+endereco char (100),
+
+CONSTRAINT chk_email_valido
+	check (email like '%_@__%.__%'));
+    
+create table tb_usuario 
+(cd_usuario INT AUTO_INCREMENT PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+email VARCHAR(100) UNIQUE,
+senha VARCHAR(100) NOT NULL,
+tipo VARCHAR(20) -- admin, atendente, etc
+);
+    
+CREATE TABLE tb_produto (
+    cd_produto INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255),
+    preco DECIMAL(10,2) NOT NULL,
+    estoque INT NOT NULL,
+    estoque_minimo INT NOT NULL DEFAULT 5,
+
+    CONSTRAINT chk_preco_positivo 
+        CHECK (preco >= 0),
+
+    CONSTRAINT chk_estoque_positivo 
+        CHECK (estoque >= 0)
+);
 
 create table tb_sala
 (cd_sala int not null primary key,
@@ -38,29 +66,29 @@ cd_sessao INT NOT NULL);
 create table tb_venda
 (nr_recibo int not null primary key,
 dt_hr_venda datetime,
-valor_total decimal(6,2),
+valor_total decimal(10,2),
 cd_cliente int not null,
 tp_pagamento varchar(20));
 
+CREATE TABLE rl_venda_produto (
+    nr_recibo INT,
+    cd_produto INT,
+    quantidade INT NOT NULL,
+    valor_parcial DECIMAL(10,2),
+
+    PRIMARY KEY (nr_recibo, cd_produto),
+
+    FOREIGN KEY (nr_recibo) REFERENCES tb_venda(nr_recibo),
+    FOREIGN KEY (cd_produto) REFERENCES tb_produto(cd_produto));
+
 create table tb_ingresso
 (cd_ingresso int not null primary key,
-valor_ingresso decimal(4,2),
+valor_ingresso decimal(10,2),
 tp_ingresso char(10),
 cd_sessao int not null,
 cd_assento int not null,
 nr_recibo int not null);
 
-create table tb_lanche
-(cd_lanche int not null primary key,
-lanche char(50),
-valor_lanche decimal(5,2));
-
-create table rl_venda_lanche
-(nr_recibo int not null,
-cd_lanche int not null,
-quantidade int,
-valor_parcial decimal(5,2),
-primary key (nr_recibo, cd_lanche));
 
 ALTER TABLE tb_cliente 
 MODIFY cd_cliente INT NOT NULL AUTO_INCREMENT;
@@ -83,8 +111,6 @@ MODIFY cd_sessao INT NOT NULL AUTO_INCREMENT;
 ALTER TABLE tb_assento
 MODIFY cd_assento INT NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE tb_lanche
-MODIFY cd_lanche INT NOT NULL AUTO_INCREMENT;
 
 alter table tb_sessao
 add constraint fk_filme foreign key (cd_filme)
@@ -110,18 +136,99 @@ alter table tb_ingresso
 add constraint fk_ingresso_assento foreign key (cd_assento)
 references tb_assento (cd_assento);
 
+ALTER TABLE tb_produto ADD cd_filme INT;
+
+ALTER TABLE tb_produto
+ADD CONSTRAINT fk_produto_filme FOREIGN KEY (cd_filme)
+REFERENCES tb_filme(cd_filme);
 
 alter table tb_venda
 add constraint fk_cliente foreign key (cd_cliente)
 references tb_cliente (cd_cliente);
 
-alter table rl_venda_lanche
-add constraint fk_venda foreign key (nr_recibo)
-references tb_venda (nr_recibo);
+ALTER TABLE tb_venda 
+DROP FOREIGN KEY fk_cliente;
 
-alter table rl_venda_lanche
-add constraint fk_lanche foreign key (cd_lanche)
-references tb_lanche (cd_lanche);
+ALTER TABLE tb_venda 
+ADD CONSTRAINT fk_cliente 
+FOREIGN KEY (cd_cliente)
+REFERENCES tb_cliente(cd_cliente)
+ON DELETE RESTRICT;
+
+ALTER TABLE tb_venda ADD cd_usuario INT;
+
+ALTER TABLE tb_venda
+ADD CONSTRAINT fk_usuario_venda
+FOREIGN KEY (cd_usuario)
+REFERENCES tb_usuario(cd_usuario);
+
+DELIMITER $$
+
+CREATE TRIGGER trg_nao_permitir_estoque_negativo
+BEFORE UPDATE ON tb_produto
+FOR EACH ROW
+BEGIN
+    IF NEW.estoque < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Estoque não pode ser negativo';
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_verificar_estoque
+BEFORE INSERT ON rl_venda_produto
+FOR EACH ROW
+BEGIN
+    DECLARE estoque_atual INT;
+
+    SELECT estoque INTO estoque_atual
+    FROM tb_produto
+    WHERE cd_produto = NEW.cd_produto;
+
+	IF estoque_atual IS NULL OR estoque_atual < NEW.quantidade THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Estoque insuficiente para venda';
+	END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_baixar_estoque
+AFTER INSERT ON rl_venda_produto
+FOR EACH ROW
+BEGIN
+    UPDATE tb_produto
+    SET estoque = estoque - NEW.quantidade
+    WHERE cd_produto = NEW.cd_produto;
+END$$
+
+DELIMITER ;
+
+INSERT INTO tb_produto (nome, descricao, preco, estoque, cd_filme)
+SELECT 
+    filme AS nome,
+    CONCAT('Filme - ', tp_filme),
+    0.00,
+	9999,
+    cd_filme
+FROM tb_filme;
+
+INSERT INTO rl_venda_produto (nr_recibo, cd_produto, quantidade, valor_parcial)
+SELECT 
+    i.nr_recibo,
+    p.cd_produto,
+    1,
+    i.valor_ingresso
+FROM tb_ingresso i
+JOIN tb_sessao s ON i.cd_sessao = s.cd_sessao
+JOIN tb_produto p ON p.cd_filme = s.cd_filme;
+
+-- Fazer atualização do insert
 
 INSERT INTO tb_filme (cd_filme, filme, duracao, classe_etaria, tp_filme)
 VALUES (1, 'Vingadores: Ultimato', '03:02:00', '12', 'Ação'),
@@ -368,4 +475,3 @@ FROM (
     SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION
     SELECT 31 UNION SELECT 32 UNION SELECT 33 UNION SELECT 34 UNION SELECT 35
 ) AS x;
-
