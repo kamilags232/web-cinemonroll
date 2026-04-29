@@ -254,3 +254,55 @@ BEGIN
 END$$
 
 DELIMITER ;
+-- clientes
+INSERT INTO tb_cliente (nome, email, cpf, telefone, endereco) VALUES 
+('Ana Silva', 'ana.silva@email.com', '12345678901', '(11) 98888-7777', 'Rua das Flores, 123'),
+('Carlos Souza', 'carlos.souza@provedor.org', '23456789012', '(11) 97777-6666', 'Av. Central, 450'),
+('Mariana Oliveira', 'mari.oliveira@gmail.com', '34567890123', '(21) 96666-5555', 'Rua Marítima, 12');
+
+-- usuários
+INSERT INTO tb_usuario (nome, email, senha, tipo) VALUES 
+('Admin Geral', 'admin@cinema.com', 'senhaForte123', 'admin'),
+('João Atendente', 'joao.vendas@cinema.com', '123456', 'atendente');
+
+-- sala
+INSERT INTO tb_sala (sala, capacidade, tp_sala, dublagem) VALUES 
+(1, 150, '3D', 'Dual Audio'),
+(2, 100, '2D', 'Legendado'),
+(3, 80, 'VIP', 'Dublado');
+
+-- filme
+INSERT INTO tb_filme (filme, duracao, classe_etaria, tp_filme) VALUES 
+('O Mistério do Tempo', '02:15:00', '12', 'Ficção Científica'),
+('Aventura na Floresta', '01:45:00', 'Livre', 'Animação'),
+('Noite de Terror', '01:50:00', '16', 'Terror');
+
+-- Sessões
+INSERT INTO tb_sessao (sessao, data_hora, cd_filme, cd_sala) VALUES 
+('Sessão Pipoca', '2023-10-27 14:00:00', 2, 1),
+('Estreia Noturna', '2023-10-27 21:00:00', 1, 3);
+
+-- ASSENTOS
+INSERT INTO tb_assento (numero_assento, ocupado, cd_sessao) VALUES 
+('A1', FALSE, 1), ('A2', FALSE, 1), ('B1', FALSE, 1), ('C5', FALSE, 1),
+('A1', FALSE, 2), ('A2', FALSE, 2);
+
+-- Produtos
+INSERT INTO tb_produto (nome, descricao, preco, estoque, estoque_minimo, tipo_produto) VALUES 
+('Pipoca Grande', 'Pipoca salgada 500g', 25.00, 100, 10, 'EXTRA'),
+('Refrigerante 600ml', 'Coca-Cola ou Guaraná', 12.00, 200, 20, 'EXTRA'),
+('Chocolate Barra', 'Chocolate ao leite', 8.50, 50, 5, 'EXTRA'),
+('Ingresso Cortesia', 'Não vendido no bar', 0.00, 999, 1, 'OUTRO');
+
+-- Vendas
+INSERT INTO tb_venda (dt_hr_venda, valor_total, cd_cliente, tp_pagamento, cd_usuario) VALUES 
+(NOW(), 62.00, 1, 'Cartão de Crédito', 2);
+
+-- rl venda produto
+INSERT INTO rl_venda_produto (nr_recibo, cd_produto, quantidade, valor_parcial) VALUES 
+(1, 1, 2, 50.00), -- 2 Pipocas Grandes
+(1, 2, 1, 12.00); -- 1 Refrigerante
+
+-- dados do ingresso
+INSERT INTO tb_ingresso (valor_ingresso, tp_ingresso, cd_sessao, cd_assento, nr_recibo) VALUES 
+(30.00, 'Inteira', 1, 1, 1);
